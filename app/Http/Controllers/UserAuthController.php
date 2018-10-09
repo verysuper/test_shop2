@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+// use App\Jobs\SendSignUpMailJob;
+use Mail;
+use Socialite;
 use Validator;  // 驗證器
 use Hash;       // 雜湊
 use App\Shop\Entity\User;   // 使用者 Eloquent Model
@@ -65,10 +68,26 @@ class UserAuthController extends Controller
 
         // 密碼加密
         $input['password'] = Hash::make($input['password']);
+
         // 新增會員資料
         $Users = User::create($input);
 
+        // 寄送註冊通知信
+        $mail_binding = [
+            'nickname' => $input['nickname'],
+            // 'email' => $input['email'],
+        ];
+
+        // SendSignUpMailJob::dispatch($mail_binding)
+        //     ->onQueue('high');
+        Mail::send('email.signUpEmailNotification',$mail_binding,
+        function($mail) use ($input){
+            $mail->to($input['email']);
+            $mail->from('ziv.tso@gmail.com');
+            $mail->subject('恭喜註冊成功');
+        });
+
         // 重新導向到登入頁
-        return redirect('/user/auth/sign-in');
+        return redirect('/user/auth/sign-up');
     }
 }
