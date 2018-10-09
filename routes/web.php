@@ -20,3 +20,8 @@ Route::group(['prefix'=>'user'],function(){
         Route::get('/sign-up','UserAuthController@signUpPage');
     });
 });
+
+// test
+Route::group(['prefix'=>'test'],function(){
+    Route::get('/home','test\testController@home');
+});
