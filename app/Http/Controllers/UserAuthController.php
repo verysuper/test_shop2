@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Validator;  // 驗證器
+use Hash;       // 雜湊
+use App\Shop\Entity\User;   // 使用者 Eloquent Model
+use DB;
+use Exception;
 
 class UserAuthController extends Controller
 {
@@ -58,6 +62,11 @@ class UserAuthController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
+
+        // 密碼加密
+        $input['password'] = Hash::make($input['password']);
+        // 新增會員資料
+        $Users = User::create($input);
 
         // 重新導向到登入頁
         return redirect('/user/auth/sign-in');
