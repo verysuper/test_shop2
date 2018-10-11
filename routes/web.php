@@ -21,6 +21,9 @@ Route::group(['prefix'=>'user'],function(){
         Route::get('/sign-up','UserAuthController@signUpPage');
         //使用者資料新增
         Route::post('/sign-up','UserAuthController@signUpProcess');
+
+        Route::get('/sign-in', 'UserAuthController@signInPage');
+        Route::post('/sign-in', 'UserAuthController@signInProcess');
     });
 });
 
