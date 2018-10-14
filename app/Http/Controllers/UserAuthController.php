@@ -120,6 +120,14 @@ class UserAuthController extends Controller
                 ->withInput();
         }
         $user=User::where('email',$input['email'])->firstOrFail();
+        if(!$user){
+            $error_message=[
+                'msg'=>'無此帳號',
+            ];
+            return redirect('/user/auth/sign-in')
+            ->withErrors($error_message)
+            ->withInput();
+        }
         $is_password_correct=Hash::check($input['password'], $user->password);
         if(!$is_password_correct){
             $error_message=[
@@ -134,5 +142,13 @@ class UserAuthController extends Controller
 
         // 重新導向到原先使用者造訪頁面，沒有嘗試造訪頁則重新導向回首頁
         return redirect()->intended('/');
+    }
+    // 處理登出資料
+    public function signOut(){
+        // 清除 Session
+        session()->forget('user_id');
+
+        // 重新導向回首頁
+        return redirect('/user/auth/sign-in');
     }
 }

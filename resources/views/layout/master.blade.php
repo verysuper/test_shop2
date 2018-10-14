@@ -15,8 +15,17 @@
 </head>
 <body>
     <header>
-        <a href="/user/auth/sign-up">註冊</a>
-        <a href="/user/auth/sign-in">登入</a>
+        <ul class="nav">
+            @if(session()->has('user_id'))
+                <li><a href="/user/auth/sign-out">登出</a></li>
+                <li><a href="/merchandise/create">新增商品</a></li>
+                <li><a href="/merchandise/manage">管理商品</a></li>
+            @else
+                <li><a href="/user/auth/sign-in">登入</a></li>
+                <li><a href="/user/auth/sign-up">註冊</a></li>
+            @endif
+        </ul>
+
     </header>
     <div class="container">
         @include('components.errors')
