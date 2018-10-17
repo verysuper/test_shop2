@@ -36,6 +36,8 @@ Route::group(['prefix' => 'merchandise'], function(){
 
     Route::get('/create', 'MerchandiseController@merchandiseCreateProcess')
         ->middleware(['user.auth.admin']); //session 2
+    Route::get('/manage', 'MerchandiseController@merchandiseManageListPage')
+        ->middleware(['user.auth.admin']);
     // 指定商品
     Route::group(['prefix' => '{merchandise_id}'], function(){
         // Route::get('/', 'MerchandiseController@merchandiseItemPage')
