@@ -11,9 +11,6 @@
     <div class="container">
         <h1>{{ $title }}</h1>
 
-        {{-- 錯誤訊息模板元件 --}}
-        @include('components.errors')
-
         <div class="row">
             <div class="col-md-12">
                 <form action="/merchandise/{{ $Merchandise->id }}"
