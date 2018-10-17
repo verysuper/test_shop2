@@ -16,7 +16,7 @@
 // });
 // 首頁
 Route::get('/', 'MerchandiseController@indexPage');
-
+// user
 Route::group(['prefix'=>'user'],function(){
     Route::group(['prefix'=>'auth'],function(){
         //使用者註冊頁面
@@ -34,8 +34,8 @@ Route::group(['prefix'=>'user'],function(){
 Route::group(['prefix' => 'merchandise'], function(){
     Route::get('/', 'MerchandiseController@merchandiseListPage');//session 1
 
-    Route::get('/create', 'MerchandiseController@merchandiseCreateProcess'); //session 2
-        // ->middleware(['user.auth.admin']);
+    Route::get('/create', 'MerchandiseController@merchandiseCreateProcess')
+        ->middleware(['user.auth.admin']); //session 2
     // 指定商品
     Route::group(['prefix' => '{merchandise_id}'], function(){
         // Route::get('/', 'MerchandiseController@merchandiseItemPage')
@@ -43,13 +43,13 @@ Route::group(['prefix' => 'merchandise'], function(){
         //         'merchandise_id' => '[0-9]+',
         //     ]);
 
-        // Route::group(['middleware' => ['user.auth.admin']], function(){
+        Route::group(['middleware' => ['user.auth.admin']], function(){
             Route::get('/edit', 'MerchandiseController@merchandiseItemEditPage');
             Route::put('/', 'MerchandiseController@merchandiseItemUpdateProcess');
-        // });
+        });
 
-        // Route::post('/buy', 'MerchandiseController@merchandiseItemBuyProcess')
-        //     ->middleware(['user.auth']);
+        Route::post('/buy', 'MerchandiseController@merchandiseItemBuyProcess')
+            ->middleware(['user.auth']);
     });
 });
 

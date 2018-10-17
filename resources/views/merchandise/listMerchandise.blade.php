@@ -11,9 +11,6 @@
     <div class="container">
         <h1>商品清單檢視</h1>
 
-        {{-- 錯誤訊息模板元件 --}}
-        @include('components.errors')
-
         </div>
     </div>
 @endsection
