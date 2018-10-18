@@ -9,14 +9,52 @@ use Image;
 
 
 class MerchandiseController extends Controller {
-
+    //首頁
     public function indexPage(){
         // 重新導向至商品頁
         return redirect('/merchandise');
     }
+    // 商品清單檢視
+    public function merchandiseListPage()
+    {
+        // 每頁資料量
+        $row_per_page = 10;
+        // 撈取商品分頁資料
+        $MerchandisePaginate = Merchandise::OrderBy('updated_at', 'desc')
+            ->where('status', 'S')      // 可販售
+            ->paginate($row_per_page);
+
+        // 設定商品圖片網址
+        foreach ($MerchandisePaginate as &$Merchandise) {
+            if (!is_null($Merchandise->photo)) {
+                // 設定商品照片網址
+                $Merchandise->photo = url($Merchandise->photo);
+            }
+        }
+
+        $binding = [
+            'title' => '商品清單檢視',
+            'MerchandisePaginate'=> $MerchandisePaginate,
+        ];
+
+        return view('merchandise.listMerchandise', $binding);
+    }
     // 商品頁
-    public function merchandiseListPage(){
-        return view('merchandise.listMerchandise');
+    public function merchandiseItemPage($merchandise_id)
+    {
+        // 撈取商品資料
+        $Merchandise = Merchandise::findOrFail($merchandise_id);
+
+        if (!is_null($Merchandise->photo)) {
+            // 設定商品照片網址
+            $Merchandise->photo = url($Merchandise->photo);
+        }
+
+        $binding = [
+            'title' => '商品頁',
+            'Merchandise'=> $Merchandise,
+        ];
+        return view('merchandise.showMerchandise', $binding);
     }
 
     public function merchandiseCreateProcess(){

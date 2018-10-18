@@ -32,6 +32,7 @@ Route::group(['prefix'=>'user'],function(){
 });
 // 商品
 Route::group(['prefix' => 'merchandise'], function(){
+    //商品清單檢視
     Route::get('/', 'MerchandiseController@merchandiseListPage');//session 1
 
     Route::get('/create', 'MerchandiseController@merchandiseCreateProcess')
@@ -40,10 +41,11 @@ Route::group(['prefix' => 'merchandise'], function(){
         ->middleware(['user.auth.admin']);
     // 指定商品
     Route::group(['prefix' => '{merchandise_id}'], function(){
-        // Route::get('/', 'MerchandiseController@merchandiseItemPage')
-        //     ->where([
-        //         'merchandise_id' => '[0-9]+',
-        //     ]);
+        //商品頁
+        Route::get('/', 'MerchandiseController@merchandiseItemPage')
+            ->where([
+                'merchandise_id' => '[0-9]+',
+            ]);
 
         Route::group(['middleware' => ['user.auth.admin']], function(){
             Route::get('/edit', 'MerchandiseController@merchandiseItemEditPage');
