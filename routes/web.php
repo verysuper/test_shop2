@@ -51,12 +51,14 @@ Route::group(['prefix' => 'merchandise'], function(){
             Route::get('/edit', 'MerchandiseController@merchandiseItemEditPage');
             Route::put('/', 'MerchandiseController@merchandiseItemUpdateProcess');
         });
-
+        // 商品購買處理
         Route::post('/buy', 'MerchandiseController@merchandiseItemBuyProcess')
             ->middleware(['user.auth']);
     });
 });
-
+// 檢視交易紀錄
+Route::get('/transaction', 'TransactionController@transactionListPage')
+    ->middleware(['user.auth']);
 // test
 Route::group(['prefix'=>'test'],function(){
     Route::get('/home','test\testController@home');

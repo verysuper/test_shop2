@@ -18,6 +18,7 @@
         <ul class="nav">
             @if(session()->has('user_id'))
                 <li><a href="/user/auth/sign-out">登出</a></li>
+                <li><a href="/transaction">transaction.list</a></li>
                 <li><a href="/merchandise/create">新增商品</a></li>
                 <li><a href="/merchandise/manage">管理商品</a></li>
             @else

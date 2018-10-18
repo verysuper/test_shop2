@@ -6,6 +6,8 @@ use App\Shop\Entity\Merchandise;
 use Validator;
 use DB;
 use Image;
+use App\Shop\Entity\Transaction;
+use App\Shop\Entity\User;
 
 
 class MerchandiseController extends Controller {
@@ -201,5 +203,94 @@ class MerchandiseController extends Controller {
         ];
 
         return view('merchandise.manageMerchandise', $binding);
+    }
+    // 商品購買處理
+    public function merchandiseItemBuyProcess($merchandise_id)
+    {
+        // 接收輸入資料
+        $input = request()->all();
+        // 驗證規則
+        $rules = [
+            // 商品購買數量
+            'buy_count' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+        ];
+
+        // 驗證資料
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            // 資料驗證錯誤
+            return redirect('/merchandise/' . $merchandise_id)
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            // 取得登入會員資料
+            $user_id = session()->get('user_id');
+            $User = User::findOrFail($user_id);
+
+            // 交易開始
+            DB::beginTransaction();
+            // 取得商品資料
+            $Merchandise = Merchandise::findOrFail($merchandise_id);
+
+            // 購買數量
+            $buy_count = $input['buy_count'];
+            // 購買後剩餘數量
+            $remain_count_after_buy = $Merchandise->remain_count - $buy_count;
+            if ($remain_count_after_buy < 0) {
+                // 購買後剩餘數量小於 0，不足以賣給使用者
+                throw new Exception('商品數量不足，無法購買');
+            }
+            // 紀錄購買後剩餘數量
+            $Merchandise->remain_count = $remain_count_after_buy;
+            $Merchandise->save();
+
+            // 總金額：總購買數量 * 商品價格
+            $total_price = $buy_count * $Merchandise->price;
+
+            $transaction_data = [
+                'user_id'        => $User->id,
+                'merchandise_id' => $Merchandise->id,
+                'price'          => $Merchandise->price,
+                'buy_count'      => $buy_count,
+                'total_price'    => $total_price,
+            ];
+
+            // 建立交易資料
+            Transaction::create($transaction_data);
+            // 交易結束
+            DB::commit();
+
+            // 回傳購物成功訊息
+            $message = [
+                'msg' => [
+                    'purchase-success',
+                ],
+            ];
+            return redirect()
+                ->to('/merchandise/' . $Merchandise->id)
+                ->withErrors($message);
+
+        } catch (Exception $exception) {
+            // 恢復原先交易狀態
+            DB::rollBack();
+
+            // 回傳錯誤訊息
+            $error_message = [
+                'msg' => [
+                    $exception->getMessage(),
+                ],
+            ];
+            return redirect()
+                ->back()
+                ->withErrors($error_message)
+                ->withInput();
+        }
     }
 }
